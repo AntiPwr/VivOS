@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/consolidated_animal.gd" id="1_a8crt"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_uhd82"]
-radius = 50.0
+radius = 84.0536
 
 [node name="ConsolidatedAnimal" type="Node2D" groups=["animals"]]
 script = ExtResource("1_a8crt")

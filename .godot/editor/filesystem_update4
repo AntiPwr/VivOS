@@ -4,3 +4,8 @@ res://scenes/escape_menu.tscn
 res://scenes/viv_ui2.tscn
 res://scenes/viv_ui1.tscn
 res://scenes/settings.tscn
+res://scenes/consolidated_animal.tscn
+res://scenes/camera_manager.tscn
+res://scenes/animal_manager.tscn
+res://scenes/debug_manager.tscn
+res://scenes/vivarium_manager.tscn

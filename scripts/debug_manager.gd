@@ -215,7 +215,7 @@ func _create_debug_overlay():
 	
 	var control = Control.new()
 	control.anchors_preset = Control.PRESET_FULL_RECT
-	control.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	control.mouse_filter = Control.MOUSE_FILTER_IGNORE  # IMPORTANT: Make sure we ignore mouse input
 	
 	var panel = Panel.new()
 	panel.name = "DebugPanel"
@@ -223,6 +223,8 @@ func _create_debug_overlay():
 	panel.anchor_bottom = 0.5
 	panel.position = Vector2(10, 10)
 	panel.self_modulate = Color(0.1, 0.1, 0.1, 0.8)
+	# Make sure panel itself doesn't block clicks on UI elements behind it
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	var vbox = VBoxContainer.new()
 	vbox.name = "VBoxContainer"
@@ -281,9 +283,14 @@ func _create_debug_overlay():
 		mouse_label.offset_top = -50
 		mouse_label.offset_bottom = -20
 		mouse_label.text = "Mouse: (0, 0)"
+		mouse_label.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Make sure label doesn't block input
 		control.add_child(mouse_label)
 	
 	debug_overlay.add_child(control)
+	
+	# Initially disable the overlay to prevent input issues on startup
+	debug_overlay.visible = false
+	
 	add_child(debug_overlay)
 
 func register_panel(panel_name: String, panel_node: Control):
@@ -642,10 +649,8 @@ func _init_panel_toggle():
 		
 	log_message("PanelToggle: Adding emergency toggle for debugging", 2, "PANEL")
 	
-	# Remove the debug label creation and panel positioning that was causing errors
-	# The original code was trying to call a non-existent method
-	# await get_tree().create_timer(1.0).timeout
-	# call_deferred("_fix_bio_panel_positioning")
+	# Remove the line that's causing the error
+	# This node is a Node type, not Control, so it doesn't have mouse_filter
 
 # Add the missing method that was causing errors
 func _fix_bio_panel_positioning():
@@ -706,149 +711,6 @@ func _print_diagnostics(trigger: String):
 	if scene_name.to_lower() == "vivarium":
 		_check_vivarium_scene()
 
-func _print_scene_tree(node, indent, max_depth: int = 3):
-	if indent > max_depth:
-		return
-		
-	var indent_str = ""
-	for i in indent:
-		indent_str += "  "
-	
-	log_message(indent_str + node.name + " (" + node.get_class() + ")", 3, "TREE")
-	
-	for child in node.get_children():
-		_print_scene_tree(child, indent + 1, max_depth)
-
-func _check_vivarium_scene():
-	# Safety check
-	if !is_inside_tree() or !get_tree() or !get_tree().current_scene:
-		return
-		
-	# Only check if we're in the vivarium scene
-	var viv_node = get_tree().current_scene
-	if viv_node.name.to_lower() != "vivarium":
-		return
-	
-	# Quick integrity check of key vivarium components
-	var has_camera = viv_node.has_node("Camera2D")
-	var has_background = viv_node.has_node("GlassBackground") 
-	var has_animals = viv_node.has_node("Animals")
-	var has_ui = viv_node.has_node("VivUI")
-	
-	var passed = has_camera && has_background && has_animals && has_ui
-	
-	log_message("Vivarium integrity check: %s" % ("PASSED" if passed else "FAILED"), 2, "DIAG")
-	if !passed:
-		log_message("Missing components: %s%s%s%s" % [
-			"Camera " if !has_camera else "",
-			"Background " if !has_background else "",
-			"Animals " if !has_animals else "",
-			"UI " if !has_ui else ""
-		], 1, "DIAG")
-
-# ---------- SETTINGS CHECKER ----------
-
-func _check_project_settings():
-	log_message("Checking project settings:", 3, "SETTINGS")
-	
-	# Check window size - using DisplayServer
-	log_message("Display/Window/Size: " + str(DisplayServer.window_get_size()), 3, "SETTINGS")
-	
-	# Check main scene
-	var main_scene = ProjectSettings.get_setting("application/run/main_scene")
-	log_message("Main scene: " + str(main_scene), 3, "SETTINGS")
-	
-	# Fix window size if needed
-	_fix_window_size()
-
-func _fix_window_size():
-	# Get current window size
-	var current_size = DisplayServer.window_get_size()
-	log_message("Current window size: " + str(current_size), 3, "SETTINGS")
-	
-	# If size is not exactly 1920x1080, adjust it
-	if current_size.x != 1920 or current_size.y != 1080:
-		log_message("Adjusting window size from " + str(current_size) + " to (1920, 1080)", 2, "SETTINGS")
-		
-		# Set to 1920x1080
-		DisplayServer.window_set_size(Vector2i(1920, 1080))
-		
-		 # Content scale factor adjustment removed - not supported in this Godot version
-		# For scaling adjustments, consider using get_tree().root.content_scale_factor instead
-		
-		log_message("Window size adjusted to: " + str(DisplayServer.window_get_size()), 2, "SETTINGS")
-
-# ---------- ANIMAL DEBUG TOOLS ----------
-
-func toggle_animal_debug_mode():
-	debug_mode = !debug_mode
-	log_message("Animal debug mode " + ("enabled" if debug_mode else "disabled"), 2, "ANIMALS")
-	
-	# Find all animals in the scene
-	animals_in_scene = get_tree().get_nodes_in_group("animals")
-	log_message("Found " + str(animals_in_scene.size()) + " animals", 2, "ANIMALS")
-	
-	# Visualize their interaction areas
-	for animal in animals_in_scene:
-		if animal.has_node("InteractionArea/CollisionShape2D"):
-			var shape = animal.get_node("InteractionArea/CollisionShape2D")
-			if debug_mode:
-				# Make collision shapes visible
-				shape.debug_color = Color(1, 0, 0, 0.3)  # Red, semi-transparent
-			else:
-				# Reset to nearly invisible
-				shape.debug_color = Color(1, 1, 1, 0.05)
-			
-			log_message("Animal " + str(animal.get("creature_name")) + " at position " + str(animal.global_position), 3, "ANIMALS")
-
-# ---------- SCENE MONITORING ----------
-
-func _on_scene_changed():
-	scene_changing = true
-	scene_change_start_time = Time.get_ticks_msec()
-	
-	# Log at info level
-	log_message("Scene changing detected", 2, "SCENE")
-	
-	# Check if current scene has changed
-	_check_scene_change()
-	
-	# Release the scene_changing flag after a delay
-	get_tree().create_timer(1.0).timeout.connect(func():
-		scene_changing = false
-		log_message("Scene change completed", 2, "SCENE")
-	)
-
-# Check if current scene has changed and log if so
-func _check_scene_change():
-	var root = get_tree().get_root()
-	var current_scene = root.get_child(root.get_child_count() - 1)
-	
-	if current_scene.name != last_scene_name:
-		last_scene_name = current_scene.name
-		log_message("Scene changed to: " + current_scene.name, 2, "SCENE")
-		return true
-		
-	return false
-
-# ---------- TIMING FUNCTIONS ----------
-
-# Start timing a block of code
-func time_start(label):
-	if !enabled || !verbose_timing:
-		return
-	timing_data[label] = Time.get_ticks_usec()
-
-# End timing and log result
-func time_end(label):
-	if !enabled || !verbose_timing || !timing_data.has(label):
-		return
-	
-	var end_time = Time.get_ticks_usec()
-	var duration = (end_time - timing_data[label]) / 1000.0
-	log_message("Timing '%s': %.2f ms" % [label, duration], 3, "TIMING")
-	timing_data.erase(label)
-
 # ---------- REGISTER DEBUG SHORTCUTS ----------
 
 func _register_debug_shortcuts():
@@ -897,30 +759,19 @@ func _input(event):
 	
 	# Keyboard shortcuts for debug functions
 	if event is InputEventKey and event.pressed:
-		 # Remove Panel toggle functionality
-		# if event.keycode == panel_toggle_key and enable_panel_toggle:
-		#	_toggle_panel()
-		#	get_viewport().set_input_as_handled()
-		
-		# Animal debug mode
+		# Only handle special debug keypresses to avoid interfering with regular game input
 		if event.ctrl_pressed and event.keycode == KEY_D:
 			toggle_animal_debug_mode()
 			get_viewport().set_input_as_handled()
-		
-		# VivPanel toggle with F3  
 		elif event.keycode == KEY_F3 and fix_viv_button:
 			_toggle_viv_panel()
 			get_viewport().set_input_as_handled()
-		
-		# Debug overlay toggle
 		elif event.is_action_pressed("toggle_ui_debugger"):
 			ui_debug_enabled = !ui_debug_enabled
 			if debug_overlay:
 				debug_overlay.visible = ui_debug_enabled
 			log_message("UI Debugger " + ("enabled" if ui_debug_enabled else "disabled"), 2, "UI")
 			get_viewport().set_input_as_handled()
-		
-		# Print diagnostics with F10
 		elif event.keycode == KEY_F10:
 			_print_diagnostics("F10 pressed")
 			get_viewport().set_input_as_handled()
@@ -963,14 +814,11 @@ func _process(_delta):
 		var click_stats = debug_overlay.get_node_or_null("Control/DebugPanel/VBoxContainer/ClickStats")
 		if click_stats:
 			click_stats.text = "Clicks: %d | Success: %d | Failed: %d" % [total_clicks, successful_clicks, failed_clicks]
-		
 		var panel_stats = debug_overlay.get_node_or_null("Control/DebugPanel/VBoxContainer/PanelStats")
 		if panel_stats:
 			panel_stats.text = "Panel Toggles: %d | Active Panels: %d" % [panel_toggles, _count_visible_panels()]
-		
-		# Update event list
 		var event_list = debug_overlay.get_node_or_null("Control/DebugPanel/VBoxContainer/EventList")
-		if event_list && tracked_events.size() > 0:
+		if event_list and tracked_events.size() > 0:
 			event_list.text = ""
 			var events_to_show = min(tracked_events.size(), 20)
 			for i in range(events_to_show):
@@ -978,11 +826,10 @@ func _process(_delta):
 				event_list.append_text(event + "\n")
 	
 	# Performance statistics
-	if collect_statistics && Engine.get_frames_drawn() % 10 == 0:
+	if collect_statistics and Engine.get_frames_drawn() % 10 == 0:
 		var current_fps = Engine.get_frames_per_second()
 		fps_min = min(fps_min, current_fps)
 		fps_max = max(fps_max, current_fps)
-		
 		fps_samples.append(current_fps)
 		if fps_samples.size() > max_samples:
 			fps_samples.pop_front()
@@ -992,7 +839,102 @@ func _process(_delta):
 		for sample in fps_samples:
 			sum += sample
 		fps_avg = sum / fps_samples.size()
-	
+		
 		# Print performance statistics less frequently
 		if Engine.get_frames_drawn() % 300 == 0:
 			log_message("Performance: FPS Min: %d, Max: %d, Avg: %.1f" % [fps_min, fps_max, fps_avg], 3, "PERF")
+
+# ---------- SCENE MONITORING ----------
+
+func _on_scene_changed():
+	scene_changing = true
+	scene_change_start_time = Time.get_ticks_msec()
+	
+	# Log at info level
+	log_message("Scene changing detected", 2, "SCENE")
+	
+	# Check if current scene has changed
+	_check_scene_change()
+	
+	# Release the scene_changing flag after a delay
+	get_tree().create_timer(1.0).timeout.connect(func():
+		scene_changing = false
+		log_message("Scene change completed", 2, "SCENE")
+	)
+
+# Check if current scene has changed and log if so
+func _check_scene_change():
+	var root = get_tree().get_root()
+	var current_scene = root.get_child(root.get_child_count() - 1)
+	
+	if current_scene.name != last_scene_name:
+		last_scene_name = current_scene.name
+		log_message("Scene changed to: " + current_scene.name, 2, "SCENE")
+		return true
+		
+	return false
+
+# Check the structure of the vivarium scene for integrity
+func _check_vivarium_scene():
+	# Safety check
+	if !is_inside_tree() or !get_tree() or !get_tree().current_scene:
+		return
+		
+	# Only check if we're in the vivarium scene
+	var viv_node = get_tree().current_scene
+	if viv_node.name.to_lower() != "vivarium":
+		return
+	
+	# Quick integrity check of key vivarium components
+	var has_camera = viv_node.has_node("Camera2D")
+	var has_background = viv_node.has_node("GlassBackground") 
+	var has_animals = viv_node.has_node("Animals")
+	var has_ui = viv_node.has_node("VivUI")
+	
+	var passed = has_camera && has_background && has_animals && has_ui
+	
+	log_message("Vivarium integrity check: %s" % ("PASSED" if passed else "FAILED"), 2, "DIAG")
+	if !passed:
+		log_message("Missing components: %s%s%s%s" % [
+			"Camera " if !has_camera else "",
+			"Background " if !has_background else "",
+			"Animals " if !has_animals else "",
+			"UI " if !has_ui else ""
+		], 1, "DIAG")
+
+# Optional: Add function to print scene tree for deeper debugging
+func _print_scene_tree(node, indent = 0, max_depth: int = 3):
+	if indent > max_depth:
+		return
+		
+	var indent_str = ""
+	for i in range(indent):
+		indent_str += "  "
+	
+	log_message(indent_str + node.name + " (" + node.get_class() + ")", 3, "TREE")
+	
+	for child in node.get_children():
+		_print_scene_tree(child, indent + 1, max_depth)
+
+# ---------- ANIMAL DEBUG TOOLS ----------
+
+func toggle_animal_debug_mode():
+	debug_mode = !debug_mode
+	log_message("Animal debug mode " + ("enabled" if debug_mode else "disabled"), 2, "ANIMALS")
+	
+	# Find all animals in the scene
+	animals_in_scene = get_tree().get_nodes_in_group("animals")
+	log_message("Found " + str(animals_in_scene.size()) + " animals", 2, "ANIMALS")
+	
+	# Visualize their interaction areas
+	for animal in animals_in_scene:
+		if animal.has_node("InteractionArea/CollisionShape2D"):
+			var shape = animal.get_node("InteractionArea/CollisionShape2D")
+			if debug_mode:
+				# Make collision shapes visible
+				shape.debug_color = Color(1, 0, 0, 0.3)  # Red, semi-transparent
+			else:
+				# Reset to nearly invisible
+				shape.debug_color = Color(1, 1, 1, 0.05)
+			
+			log_message("Animal " + str(animal.get("creature_name")) + " at position " + str(animal.global_position), 3, "ANIMALS")

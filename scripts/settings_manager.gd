@@ -20,7 +20,7 @@ func show_settings():
 	# If settings are already shown, just return
 	if active_settings and is_instance_valid(active_settings):
 		print("SettingsManager: Settings already active")
-		return
+		return active_settings
 	
 	# Load settings scene with proper error handling
 	if not settings_scene:
@@ -29,6 +29,9 @@ func show_settings():
 	if settings_scene:
 		# Create settings instance safely
 		var settings = settings_scene.instantiate()
+		
+		# Make sure it processes while game is paused
+		settings.process_mode = Node.PROCESS_MODE_WHEN_PAUSED
 		
 		# Add to the root to ensure it's visible everywhere
 		get_tree().root.add_child(settings)
@@ -52,6 +55,9 @@ func show_settings():
 		
 		settings.position = (viewport_size - panel_size) / 2
 		
+		# Fix all buttons to ensure they're interactive
+		_fix_settings_buttons(settings)
+		
 		# Connect closing signal
 		if !settings.is_connected("settings_closed", _on_settings_closed):
 			settings.connect("settings_closed", _on_settings_closed)
@@ -61,6 +67,23 @@ func show_settings():
 	else:
 		print("SettingsManager: Failed to load settings scene")
 		return null
+
+# Recursively fix all buttons in the settings panel
+func _fix_settings_buttons(node):
+	if node is Button:
+		node.focus_mode = Control.FOCUS_ALL
+		node.mouse_filter = Control.MOUSE_FILTER_STOP
+		node.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	elif node is Slider:
+		node.focus_mode = Control.FOCUS_ALL
+		node.mouse_filter = Control.MOUSE_FILTER_STOP
+	elif node is CheckBox:
+		node.focus_mode = Control.FOCUS_ALL
+		node.mouse_filter = Control.MOUSE_FILTER_STOP
+	
+	# Process all children
+	for child in node.get_children():
+		_fix_settings_buttons(child)
 
 # Hide/close any active settings panel
 func hide_settings():

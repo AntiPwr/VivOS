@@ -450,11 +450,12 @@ func _setup_interaction_area():
 
 func _on_interaction_area_input(_viewport, event, _shape_idx):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		# Always emit selected signal when clicked, regardless of current selection state
+		emit_signal("selected", self)
+		
+		# If not already selected, also perform selection
 		if !is_selected:
 			select()
-		else:
-				# Simply notify that it was clicked again while selected
-				emit_signal("selected", self)
 
 func select():
 	if is_selected:
@@ -591,7 +592,7 @@ func set_creature_name(new_name: String) -> void:
 		return  # Don't allow empty names
 		
 	creature_name = new_name
-	is_named = true
+	is_named = true  # Make sure to set is_named to true when a name is set
 	
 	if name_label and is_instance_valid(name_label):
 		name_label.text = new_name
@@ -605,7 +606,7 @@ func get_creature_name() -> String:
 		return "[Unnamed " + species_type + "]"
 	return creature_name
 
-# Check if the animal has been properly named
+# Check if the animal has been properly named - this method is important!
 func has_been_named() -> bool:
 	return is_named
 

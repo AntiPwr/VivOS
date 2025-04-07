@@ -102,30 +102,6 @@ offset_right = -12.0
 offset_bottom = 1.26
 grow_vertical = 2
 
-[node name="AnimalButton" type="Button" parent="Control/VivPanel/BioToolButton/BioToolPanel"]
-custom_minimum_size = Vector2(180, 30)
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 25.0
-offset_top = 50.0
-offset_right = -205.0
-offset_bottom = -68.0
-text = "Add Animal"
-
-[node name="PlantButton" type="Button" parent="Control/VivPanel/BioToolButton/BioToolPanel"]
-custom_minimum_size = Vector2(180, 30)
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 211.0
-offset_top = 50.0
-offset_right = -19.0
-offset_bottom = -68.0
-text = "Add Plant"
-
 [node name="ScapeToolButton" type="Button" parent="Control/VivPanel"]
 custom_minimum_size = Vector2(190, 30)
 layout_mode = 1
@@ -137,7 +113,6 @@ offset_bottom = 80.0
 text = "Scape Tool"
 
 [node name="ScapeToolPanel" type="Panel" parent="Control/VivPanel/ScapeToolButton"]
-visible = false
 custom_minimum_size = Vector2(390, 140)
 layout_mode = 0
 offset_left = -400.0
@@ -169,7 +144,6 @@ offset_bottom = 120.0
 text = "Eco Tool"
 
 [node name="EcoToolPanel" type="Panel" parent="Control/VivPanel/EcoButton"]
-visible = false
 custom_minimum_size = Vector2(390, 190)
 layout_mode = 0
 offset_left = -400.0
@@ -188,23 +162,12 @@ offset_bottom = 160.0
 text = "Hierarchy"
 
 [node name="HierarchyPanel" type="Panel" parent="Control/VivPanel/HierarchyButton"]
-visible = false
 custom_minimum_size = Vector2(390, 190)
 layout_mode = 0
 offset_left = -400.0
 offset_top = -200.0
 offset_right = -10.0
 offset_bottom = -10.0
-
-[node name="SettingsButton" type="Button" parent="Control/VivPanel"]
-custom_minimum_size = Vector2(190, 30)
-layout_mode = 1
-anchors_preset = -1
-offset_left = 10.0
-offset_top = 170.0
-offset_right = 200.0
-offset_bottom = 200.0
-text = "Settings"
 
 [node name="DialogsContainer" type="Control" parent="."]
 layout_mode = 3

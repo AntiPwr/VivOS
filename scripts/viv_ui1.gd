@@ -81,11 +81,20 @@ func _ready():
 	# Set up viewport adjustment
 	_setup_viewport_adjuster()
 	
-	# Connect to animal manager signals
+	# Connect to animal manager signals with proper error checking
 	var animal_manager = get_node_or_null("/root/AnimalManager")
 	if animal_manager:
-		if !animal_manager.is_connected("animal_naming_requested", Callable(self, "show_animal_bio_panel_for_naming")):
-			animal_manager.connect("animal_naming_requested", Callable(self, "show_animal_bio_panel_for_naming"))
+		if animal_manager.has_signal("animal_naming_requested"):
+			if !animal_manager.is_connected("animal_naming_requested", Callable(self, "show_animal_bio_panel_for_naming")):
+				animal_manager.connect("animal_naming_requested", Callable(self, "show_animal_bio_panel_for_naming"))
+				print("VivUI1: Connected to animal_naming_requested signal")
+		else:
+			print("VivUI1: WARNING - AnimalManager doesn't have animal_naming_requested signal")
+	else:
+		print("VivUI1: WARNING - Could not find AnimalManager singleton")
+	
+	# Add to viv_ui1 group for easier reference
+	add_to_group("viv_ui1")
 	
 	# Set up camera references
 	camera = get_viewport().get_camera_2d()
@@ -370,6 +379,15 @@ func _initialize_scape_tool_ui():
 	
 	# Setup brush button
 	var brush_button = scape_tool_panel.get_node_or_null("BrushButton")
+	if !brush_button:
+		# Try creating it if not found
+		brush_button = Button.new()
+		brush_button.name = "BrushButton"
+		brush_button.text = "Brush"
+		brush_button.position = Vector2(10, 10)
+		brush_button.size = Vector2(80, 30)
+		scape_tool_panel.add_child(brush_button)
+	
 	if brush_button:
 		if !brush_button.pressed.is_connected(_on_brush_button_pressed):
 			brush_button.pressed.connect(_on_brush_button_pressed)
@@ -378,6 +396,15 @@ func _initialize_scape_tool_ui():
 	
 	# Setup pen button
 	var pen_button = scape_tool_panel.get_node_or_null("PenButton")
+	if !pen_button:
+		# Try creating it if not found
+		pen_button = Button.new()
+		pen_button.name = "PenButton"
+		pen_button.text = "Pen"
+		pen_button.position = Vector2(100, 10)
+		pen_button.size = Vector2(80, 30)
+		scape_tool_panel.add_child(pen_button)
+	
 	if pen_button:
 		if !pen_button.pressed.is_connected(_on_pen_button_pressed):
 			pen_button.pressed.connect(_on_pen_button_pressed)
@@ -386,17 +413,47 @@ func _initialize_scape_tool_ui():
 	
 	# Setup size slider
 	var size_slider = scape_tool_panel.get_node_or_null("SizeSlider")
+	if !size_slider:
+		# Try creating it if not found
+		size_slider = HSlider.new()
+		size_slider.name = "SizeSlider"
+		size_slider.position = Vector2(10, 50)
+		size_slider.size = Vector2(270, 20)
+		size_slider.min_value = 5.0
+		size_slider.max_value = 100.0
+		size_slider.step = 5.0
+		var size_label = Label.new()
+		size_label.text = "Size"
+		size_label.position = Vector2(10, 30)
+		scape_tool_panel.add_child(size_label)
+		scape_tool_panel.add_child(size_slider)
+	
 	if size_slider:
 		if !size_slider.value_changed.is_connected(_on_size_slider_changed):
 			size_slider.value_changed.connect(_on_size_slider_changed)
 			# Set initial value
-			if viv_ui2 and viv_ui2.has_method("set_brush_size"):
+			if viv_ui2 and "brush_size" in viv_ui2:
 				size_slider.value = viv_ui2.brush_size
 	else:
 		print("VivUI1: SizeSlider not found in ScapeToolPanel")
 	
 	# Setup strength slider
 	var strength_slider = scape_tool_panel.get_node_or_null("StrengthSlider")
+	if !strength_slider:
+		# Try creating it if not found
+		strength_slider = HSlider.new()
+		strength_slider.name = "StrengthSlider"
+		strength_slider.position = Vector2(10, 100)
+		strength_slider.size = Vector2(270, 20)
+		strength_slider.min_value = 0.1
+		strength_slider.max_value = 2.0
+		strength_slider.step = 0.1
+		var strength_label = Label.new()
+		strength_label.text = "Strength" 
+		strength_label.position = Vector2(10, 80)
+		scape_tool_panel.add_child(strength_label)
+		scape_tool_panel.add_child(strength_slider)
+	
 	if strength_slider:
 		if !strength_slider.value_changed.is_connected(_on_strength_slider_changed):
 			strength_slider.value_changed.connect(_on_strength_slider_changed)
@@ -617,20 +674,18 @@ func toggle_escape_menu():
 func _input(event):
 	# Check for escape key
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
-			# If there's an active naming panel, cancel the naming process
-		if active_naming_panel and is_instance_valid(active_naming_panel):
-			_cancel_naming_process()
-			return
-		
-		# Otherwise use escape menu scene
-		var escape_menu_scene = load("res://scenes/escape_menu.tscn")
-		if escape_menu_scene:
-			var escape_menu_instance = escape_menu_scene.instantiate()
-			get_tree().root.add_child(escape_menu_instance)
-			get_tree().paused = true
+		# Toggle escape menu
+		toggle_escape_menu()
+		# Mark the event as handled to prevent other nodes from processing it
+		get_viewport().set_input_as_handled()
 
 # Enhanced animal selection functionality
 func select_animal(animal):
+	if selected_animal == animal:
+		# If clicking the same animal again, just show the panel
+		show_animal_bio_panel(animal)
+		return
+		
 	if selected_animal:
 		deselect_animal()
 	
@@ -651,6 +706,9 @@ func select_animal(animal):
 
 # Function to handle when user cancels naming
 func _cancel_naming_process():
+	# Unpause the game
+	get_tree().paused = false
+	
 	if pending_animal_to_name and is_instance_valid(pending_animal_to_name):
 		# Get animal manager and request removal of unnamed animal
 		var animal_manager = get_node_or_null("/root/AnimalManager")
@@ -688,24 +746,38 @@ func focus_camera_on_animal(animal):
 func show_animal_bio_panel_for_naming(animal):
 	print("VivUI1: Opening bio panel for naming " + animal.get_creature_name())
 	
+	# Select the animal first
+	select_animal(animal)
+	
 	# Store reference to the animal being named
 	pending_animal_to_name = animal
 	
 	# Focus camera on the animal
 	focus_camera_on_animal(animal)
 	
-	# Find VivUI2
+	# Find VivUI2 with retry mechanism
 	var viv_ui2 = get_node_or_null("/root/VivUI2")
 	if !viv_ui2:
 		# Try to find the global registry to get VivUI2
 		var global_registry = get_node_or_null("/root/GlobalRegistry")
 		if global_registry and global_registry.has_method("get_viv_ui2"):
 			viv_ui2 = global_registry.get_viv_ui2()
+			print("VivUI1: Got VivUI2 reference from GlobalRegistry")
 	
 	# Use VivUI2 to show the bio UI panel with naming
 	if viv_ui2 and viv_ui2.has_method("show_bio_ui_with_naming"):
-		viv_ui2.show_bio_ui_with_naming(animal)
+		print("VivUI1: Using VivUI2.show_bio_ui_with_naming for " + animal.get_creature_name())
+		var panel = viv_ui2.show_bio_ui_with_naming(animal)
+		if panel:
+			active_naming_panel = panel
+			
+			# Pause the game while naming an animal to ensure user completes it
+			get_tree().paused = true
+		else:
+			print("VivUI1: VivUI2.show_bio_ui_with_naming returned null panel")
+			create_naming_bio_panel(animal)  # Fallback
 	else:
+		print("VivUI1: Could not find VivUI2 or missing method, using fallback")
 		# Fallback to simple naming panel
 		create_naming_bio_panel(animal)
 
@@ -740,6 +812,9 @@ func create_naming_bio_panel(animal):
 	
 	# Store reference to the panel
 	active_naming_panel = panel
+	
+	# Pause the game while naming an animal
+	get_tree().paused = true
 	
 	# Create the title
 	var title = Label.new()
@@ -804,9 +879,12 @@ func create_naming_bio_panel(animal):
 		else:
 			# Set the name and close
 			animal.set_creature_name(name_input.text)
+			animal.is_named = true
 			pending_animal_to_name = null
 			panel.queue_free()
 			active_naming_panel = null
+			# Unpause the game after naming is completed
+			get_tree().paused = false
 	)
 	panel.add_child(confirm_button)
 	
@@ -861,50 +939,44 @@ func _create_simple_info_panel(animal):
 	# Create the panel
 	var panel = Panel.new()
 	panel.name = "AnimalInfoPanel"
-	panel.size = Vector2(400, 300)
+	panel.size = Vector2(500, 400)
 	
 	# Create the title
 	var title = Label.new()
 	title.text = animal.get_creature_name() + " - " + animal.species_type
 	title.position = Vector2(20, 20)
-	title.size = Vector2(360, 30)
+	title.size = Vector2(460, 30)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	panel.add_child(title)
 	
-	# Create the buttons container
-	var buttons = VBoxContainer.new()
-	buttons.position = Vector2(20, 60)
-	buttons.size = Vector2(360, 180)
-	panel.add_child(buttons)
+	# Create tab container
+	var tab_container = TabContainer.new()
+	tab_container.position = Vector2(20, 60)
+	tab_container.size = Vector2(460, 280)
+	panel.add_child(tab_container)
 	
-	# Add rename button
-	var rename_button = Button.new()
-	rename_button.text = "Rename"
-	rename_button.pressed.connect(func(): show_naming_dialog(animal))
-	buttons.add_child(rename_button)
+	# Create needs tab
+	var needs_tab = _create_needs_tab(animal)
+	needs_tab.name = "Needs"
+	tab_container.add_child(needs_tab)
 	
-	# Add info button
-	var info_button = Button.new()
-	info_button.text = "More Information"
-	info_button.pressed.connect(func(): _show_species_info(animal.species_type))
-	buttons.add_child(info_button)
+	# Create custom tab
+	var custom_tab = _create_custom_tab(animal)
+	custom_tab.name = "Custom"
+	tab_container.add_child(custom_tab)
 	
-	# Add wiki button
-	var wiki_button = Button.new()
-	wiki_button.text = "Visit Wiki"
-	wiki_button.pressed.connect(func(): _show_external_link_warning("https://antipwr.github.io", animal.species_type))
-	buttons.add_child(wiki_button)
-	
-	# Add feed button
-	var feed_button = Button.new()
-	feed_button.text = "Feed"
-	feed_button.pressed.connect(func(): _feed_animal(animal))
-	buttons.add_child(feed_button)
+	# Create info tab
+	var info_tab = _create_info_tab(animal)
+	info_tab.name = "Info"
+	tab_container.add_child(info_tab)
 	
 	# Add close button
 	var close_button = Button.new()
 	close_button.text = "Close"
-	close_button.pressed.connect(func(): panel.queue_free(); deselect_animal())
-	buttons.add_child(close_button)
+	close_button.position = Vector2(200, 350)
+	close_button.size = Vector2(100, 40)
+	close_button.pressed.connect(func(): panel.queue_free())
+	panel.add_child(close_button)
 	
 	# Add to UI
 	if control_node:
@@ -915,6 +987,217 @@ func _create_simple_info_panel(animal):
 	panel.position = (viewport_size - panel.size) / 2
 	
 	return panel
+
+# Create the needs tab content based on Planet Zoo's system
+func _create_needs_tab(animal) -> Control:
+	var tab = Control.new()
+	
+	# Create scrollable container for needs
+	var scroll_container = ScrollContainer.new()
+	scroll_container.size = Vector2(440, 260)
+	scroll_container.position = Vector2(10, 10)
+	tab.add_child(scroll_container)
+	
+	# Create vertical container for needs bars
+	var needs_container = VBoxContainer.new()
+	needs_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll_container.add_child(needs_container)
+	
+	# Add health need
+	_add_need_bar(needs_container, "Health", animal.health, 100, Color(0.2, 0.8, 0.2))
+	
+	# Add hunger need (inverse of hunger value, as lower hunger is better)
+	_add_need_bar(needs_container, "Nutrition", 100 - animal.hunger, 100, Color(0.9, 0.6, 0.1))
+	
+	# Add satisfaction need
+	_add_need_bar(needs_container, "Happiness", animal.satisfaction, 100, Color(0.2, 0.6, 0.9))
+	
+	# Add environment needs based on species
+	match animal.species_type:
+		"Cherry Shrimp":
+			_add_need_bar(needs_container, "Water Quality", 85, 100, Color(0.4, 0.7, 0.9))
+			_add_need_bar(needs_container, "Plant Cover", 70, 100, Color(0.3, 0.8, 0.3))
+			_add_need_bar(needs_container, "Social", 65, 100, Color(0.9, 0.4, 0.8))
+		"Dream Guppy":
+			_add_need_bar(needs_container, "Swimming Space", 90, 100, Color(0.5, 0.7, 0.9))
+			_add_need_bar(needs_container, "Enrichment", 60, 100, Color(0.9, 0.8, 0.3))
+			_add_need_bar(needs_container, "Social", 75, 100, Color(0.9, 0.4, 0.8))
+		_:
+			_add_need_bar(needs_container, "Habitat", 80, 100, Color(0.7, 0.7, 0.3))
+	
+	# Add feed button
+	var feed_button = Button.new()
+	feed_button.text = "Feed"
+	feed_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	feed_button.pressed.connect(func(): _feed_animal(animal))
+	needs_container.add_child(feed_button)
+	
+	# Add spacer at bottom
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 10)
+	needs_container.add_child(spacer)
+	
+	return tab
+
+# Helper function to add need bars
+func _add_need_bar(container, label_text, current_value, max_value, bar_color):
+	var label = Label.new()
+	label.text = label_text
+	container.add_child(label)
+	
+	var progress_bar = ProgressBar.new()
+	progress_bar.custom_minimum_size = Vector2(0, 20)
+	progress_bar.max_value = max_value
+	progress_bar.value = current_value
+	progress_bar.show_percentage = true
+	
+	# Set bar color
+	var style_box = StyleBoxFlat.new()
+	style_box.bg_color = bar_color
+	progress_bar.add_theme_stylebox_override("fill", style_box)
+	
+	container.add_child(progress_bar)
+	
+	# Add description of need status
+	var status_label = Label.new()
+	status_label.text = _get_need_status_text(current_value, max_value)
+	container.add_child(status_label)
+	
+	# Add spacer
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 10)
+	container.add_child(spacer)
+
+# Get descriptive text for need status
+func _get_need_status_text(value, max_value):
+	var percentage = (value / max_value) * 100
+	if percentage >= 90:
+		return "Excellent"
+	elif percentage >= 75:
+		return "Good"
+	elif percentage >= 50:
+		return "Average"
+	elif percentage >= 25:
+		return "Poor"
+	else:
+		return "Critical"
+
+# Create the custom tab content (placeholder)
+func _create_custom_tab(_animal) -> Control:
+	var tab = Control.new()
+	
+	var label = Label.new()
+	label.text = "Customization options will be available here.\nStay tuned for future updates!"
+	label.position = Vector2(20, 20)
+	label.size = Vector2(400, 60)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tab.add_child(label)
+	
+	var placeholder = Label.new()
+	placeholder.text = "Coming Soon"
+	placeholder.position = Vector2(20, 100)
+	placeholder.size = Vector2(400, 40)
+	placeholder.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	tab.add_child(placeholder)
+	
+	return tab
+
+# Create the info tab content
+func _create_info_tab(animal) -> Control:
+	var tab = Control.new()
+	
+	# Container for information
+	var info_container = VBoxContainer.new()
+	info_container.position = Vector2(10, 10)
+	info_container.size = Vector2(440, 240)
+	tab.add_child(info_container)
+	
+	# Species information
+	var species_label = Label.new()
+	species_label.text = "Species: " + animal.species_type
+	info_container.add_child(species_label)
+	
+	# Age information
+	var age_hours = animal.age * 24  # Convert days to hours
+	var age_days = floor(animal.age)
+	var age_months = floor(age_days / 30)
+	var age_years = floor(age_months / 12)
+	
+	var remaining_months = age_months % 12
+	var remaining_days = age_days % 30
+	var remaining_hours = (age_hours - (age_days * 24))
+	
+	var age_text = ""
+	if age_years > 0:
+		age_text += str(age_years) + " years, "
+	if remaining_months > 0 or age_years > 0:
+		age_text += str(remaining_months) + " months, "
+	if remaining_days > 0 or remaining_months > 0 or age_years > 0:
+		age_text += str(remaining_days) + " days, "
+	age_text += str(floor(remaining_hours)) + " hours"
+	
+	var age_label = Label.new()
+	age_label.text = "Age: " + age_text
+	info_container.add_child(age_label)
+	
+	# Add age state
+	var age_state_label = Label.new()
+	age_state_label.text = "Life Stage: " + animal.age_state.capitalize()
+	info_container.add_child(age_state_label)
+	
+	# Add spacer
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 20)
+	info_container.add_child(spacer)
+	
+	# Add feeding type
+	var feeding_type = "Unknown"
+	match animal.feeding_type:
+		0: feeding_type = "Carnivore"
+		1: feeding_type = "Herbivore"
+		2: feeding_type = "Omnivore"
+		3: feeding_type = "Detritivore"
+		4: feeding_type = "Filter Feeder"
+	
+	var feeding_label = Label.new()
+	feeding_label.text = "Diet: " + feeding_type
+	info_container.add_child(feeding_label)
+	
+	# Add environmental preferences
+	var env_prefs = "Environmental Preferences: "
+	if animal.environment_prefs.is_empty():
+		env_prefs += "None"
+	else:
+		var prefs = []
+		for pref in animal.environment_prefs:
+			match pref:
+				0: prefs.append("Open Water")
+				1: prefs.append("Plant Cover")
+				2: prefs.append("Rocks")
+				3: prefs.append("Caves")
+				4: prefs.append("Surface")
+				5: prefs.append("Substrate")
+		env_prefs += ", ".join(prefs)
+	
+	var env_label = Label.new()
+	env_label.text = env_prefs
+	info_container.add_child(env_label)
+	
+	# Add wiki button
+	var wiki_button = Button.new()
+	wiki_button.text = "Visit VivOS Wiki"
+	wiki_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	wiki_button.custom_minimum_size = Vector2(150, 40)
+	wiki_button.pressed.connect(func(): _show_external_link_warning("https://antipwr.github.io", animal.species_type))
+	
+	# Add some space before the button
+	var button_spacer = Control.new()
+	button_spacer.custom_minimum_size = Vector2(0, 20)
+	info_container.add_child(button_spacer)
+	
+	info_container.add_child(wiki_button)
+	
+	return tab
 
 # Show species information
 func _show_species_info(species_type: String):

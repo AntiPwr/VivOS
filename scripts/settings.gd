@@ -59,11 +59,67 @@ signal settings_closed
 signal online_services_requested
 
 func _ready():
-	print("Settings: Starting initialization")
+	print("Settings: Initializing...")
 	
-	# Add a small delay before trying to get node references
-	# to ensure the control has proper layout first
-	call_deferred("_deferred_ready")
+	# Make sure we're processing inputs
+	set_process_input(true)
+	
+	# Ensure this control catches input
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	
+	# Make the background clickable but have it stop input propagation
+	var background = get_node_or_null("Background")
+	if background:
+		background.mouse_filter = Control.MOUSE_FILTER_STOP
+	
+	# Ensure our position is valid
+	if position == Vector2.ZERO:
+		position = Vector2(100, 100)  # Set a safe default position
+	
+	# Always grab input focus when shown
+	grab_focus()
+	
+	# Connect signals and get references
+	_connect_signals()
+	_get_references()
+	
+	print("Settings: Ready complete")
+	
+	# Initialize settings values by loading them from global state
+	_initialize_settings()
+
+# Get UI reference nodes
+func _get_references():
+	# Safely get UI references with null checks - using explicit node paths for reliability
+	hours_slider = get_node_or_null("ScrollContainer/VBoxContainer/DifficultySection/ProductivityContainer/ProductivitySlider")
+	hours_value = get_node_or_null("ScrollContainer/VBoxContainer/DifficultySection/ProductivityContainer/TodayContainer/TodayLabel")
+	music_slider = get_node_or_null("ScrollContainer/VBoxContainer/AudioSection/MusicSlider")
+	sfx_slider = get_node_or_null("ScrollContainer/VBoxContainer/AudioSection/SFXSlider")
+	easy_button = get_node_or_null("ScrollContainer/VBoxContainer/DifficultySection/HBoxContainer/EasyButton")
+	normal_button = get_node_or_null("ScrollContainer/VBoxContainer/DifficultySection/HBoxContainer/NormalButton")
+	hard_button = get_node_or_null("ScrollContainer/VBoxContainer/DifficultySection/HBoxContainer/HardButton")
+	fullscreen_check = get_node_or_null("ScrollContainer/VBoxContainer/VideoSection/FullscreenCheck")
+	autosave_check = get_node_or_null("ScrollContainer/VBoxContainer/DataSection/AutosaveCheck")
+	reset_button = get_node_or_null("ScrollContainer/VBoxContainer/DataSection/ButtonContainer/ResetButton")
+	backup_button = get_node_or_null("ScrollContainer/VBoxContainer/DataSection/ButtonContainer/BackupButton")
+	close_button = get_node_or_null("CloseButton")
+	
+	# Get Escape Menu references if they exist
+	escape_menu_overlay = get_node_or_null("EscapeMenuOverlay")
+	if escape_menu_overlay:
+		escape_settings_button = escape_menu_overlay.get_node_or_null("MenuPanel/VBoxContainer/SettingsButton")
+		escape_online_button = escape_menu_overlay.get_node_or_null("MenuPanel/VBoxContainer/OnlineButton")
+		escape_save_exit_button = escape_menu_overlay.get_node_or_null("MenuPanel/VBoxContainer/SaveExitButton")
+		escape_resume_button = escape_menu_overlay.get_node_or_null("MenuPanel/VBoxContainer/ResumeButton")
+	
+	# Get vivarium references
+	vivarium_manager = get_node_or_null("/root/VivariumManager")
+	vivarium_scene = get_parent()
+
+# Also need to add the missing _initialize_settings function
+func _initialize_settings():
+	# Load settings from config file
+	_load_settings()
 
 # Deferred initialization to ensure all nodes are ready
 func _deferred_ready():
@@ -112,32 +168,8 @@ func _deferred_ready():
 			if close_button:
 				close_button.visible = false
 	
-	# Safely get UI references with null checks - using explicit node paths for reliability
-	hours_slider = get_node_or_null("ScrollContainer/VBoxContainer/DifficultySection/ProductivityContainer/ProductivitySlider")
-	hours_value = get_node_or_null("ScrollContainer/VBoxContainer/DifficultySection/ProductivityContainer/TodayContainer/TodayLabel")
-	music_slider = get_node_or_null("ScrollContainer/VBoxContainer/AudioSection/MusicSlider")
-	sfx_slider = get_node_or_null("ScrollContainer/VBoxContainer/AudioSection/SFXSlider")
-	easy_button = get_node_or_null("ScrollContainer/VBoxContainer/DifficultySection/HBoxContainer/EasyButton")
-	normal_button = get_node_or_null("ScrollContainer/VBoxContainer/DifficultySection/HBoxContainer/NormalButton")
-	hard_button = get_node_or_null("ScrollContainer/VBoxContainer/DifficultySection/HBoxContainer/HardButton")
-	fullscreen_check = get_node_or_null("ScrollContainer/VBoxContainer/VideoSection/FullscreenCheck")
-	autosave_check = get_node_or_null("ScrollContainer/VBoxContainer/DataSection/AutosaveCheck")
-	reset_button = get_node_or_null("ScrollContainer/VBoxContainer/DataSection/ButtonContainer/ResetButton")
-	backup_button = get_node_or_null("ScrollContainer/VBoxContainer/DataSection/ButtonContainer/BackupButton")
-	close_button = get_node_or_null("CloseButton")
-	
-	# Get references
-	vivarium_manager = get_node_or_null("/root/VivManager")
-	vivarium_scene = get_parent()
-	
-	# Load settings
-	_load_settings()
-	
 	# Initialize UI with loaded values
 	_initialize_ui()
-	
-	# Connect signals
-	_connect_signals()
 	
 	# Center in viewport if not already positioned by parent
 	if position == Vector2.ZERO or parent_is_main_menu:
