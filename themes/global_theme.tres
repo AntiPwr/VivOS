@@ -1,0 +1,55 @@
+[gd_resource type="Theme" load_steps=5 format=3 uid="uid://bc7qqrh46plyd"]
+
+[ext_resource type="FontFile" uid="uid://bb746tsk1627f" path="res://fonts/Syne/static/Syne-Bold.ttf" id="1_heading_bold"]
+[ext_resource type="FontFile" uid="uid://bvvj1558vdppj" path="res://fonts/Syne/static/Syne-Regular.ttf" id="2_heading_regular"]
+[ext_resource type="FontFile" uid="uid://u61ve363uhut" path="res://fonts/Inter/static/Inter_28pt-Bold.ttf" id="3_body_bold"]
+[ext_resource type="FontFile" uid="uid://cx1248ij7p356" path="res://fonts/Inter/static/Inter_28pt-Regular.ttf" id="4_body_regular"]
+
+[sub_resource type="SystemFont" id="SystemFont_k5rrw"]
+font_names = ["Syne"]
+
+[resource]
+default_font = SubResource("SystemFont_k5rrw")
+default_font_size = 16
+Label/fonts/font = ExtResource("4_body_regular")
+Label/font_sizes/font_size = 16
+Button/fonts/font = ExtResource("4_body_regular")
+Button/font_sizes/font_size = 16
+LineEdit/fonts/font = ExtResource("4_body_regular")
+
+HeaderLarge/base_type = &"Label"
+HeaderLarge/fonts/font = ExtResource("1_heading_bold")
+HeaderLarge/font_sizes/font_size = 72
+
+HeaderMedium/base_type = &"Label"
+HeaderMedium/fonts/font = ExtResource("1_heading_bold")
+HeaderMedium/font_sizes/font_size = 32
+
+HeaderSmall/base_type = &"Label"
+HeaderSmall/fonts/font = ExtResource("2_heading_regular")
+HeaderSmall/font_sizes/font_size = 24
+
+BodyLarge/base_type = &"Label" 
+BodyLarge/fonts/font = ExtResource("4_body_regular")
+BodyLarge/font_sizes/font_size = 24
+
+BodyMedium/base_type = &"Label"
+BodyMedium/fonts/font = ExtResource("4_body_regular") 
+BodyMedium/font_sizes/font_size = 18
+
+BodySmall/base_type = &"Label"
+BodySmall/fonts/font = ExtResource("4_body_regular")
+BodySmall/font_sizes/font_size = 14
+
+ButtonLarge/base_type = &"Button"
+ButtonLarge/fonts/font = ExtResource("3_body_bold")
+ButtonLarge/font_sizes/font_size = 24
+
+ButtonMedium/base_type = &"Button"
+ButtonMedium/fonts/font = ExtResource("3_body_bold")
+ButtonMedium/font_sizes/font_size = 18
+
+RichTextLabel/fonts/normal_font = ExtResource("4_body_regular")
+RichTextLabel/fonts/bold_font = ExtResource("3_body_bold")
+RichTextLabel/font_sizes/normal_font_size = 16
+RichTextLabel/font_sizes/bold_font_size = 16

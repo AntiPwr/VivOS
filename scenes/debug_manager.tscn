@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8gg4f281re0u"]
+
+[ext_resource type="Script" path="res://scripts/debug_manager.gd" id="1_bx6jr"]
+
+[node name="DebugManager" type="Node"]
+process_priority = -100
+script = ExtResource("1_bx6jr")
+enabled = false
+log_level = 2
+panel_toggle_key = 70
