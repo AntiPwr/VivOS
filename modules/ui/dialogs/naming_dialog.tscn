@@ -1,0 +1,49 @@
+[gd_scene load_steps=2 format=3 uid="uid://b16uytbi585r"]
+
+[ext_resource type="Script" path="res://modules/ui/dialogs/naming_dialog.gd" id="1_1kac7"]
+
+[node name="NamingDialog" type="Panel"]
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("1_1kac7")
+
+[node name="TitleLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 380.0
+offset_bottom = 50.0
+text = "Name Your Animal"
+horizontal_alignment = 1
+
+[node name="NameInput" type="LineEdit" parent="."]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 70.0
+offset_right = 350.0
+offset_bottom = 110.0
+placeholder_text = "Enter a name..."
+
+[node name="RandomButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 120.0
+offset_right = 140.0
+offset_bottom = 150.0
+text = "Random"
+
+[node name="ConfirmButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 200.0
+offset_top = 120.0
+offset_right = 300.0
+offset_bottom = 150.0
+text = "Confirm"
+
+[node name="CancelButton" type="Button" parent="."]
+layout_mode = 0
+offset_left = 310.0
+offset_top = 120.0
+offset_right = 400.0
+offset_bottom = 150.0
+text = "Cancel"

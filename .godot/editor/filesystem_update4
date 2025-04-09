@@ -1,11 +1,5 @@
-res://scenes/main_menu.tscn
-res://scenes/vivarium.tscn
-res://scenes/escape_menu.tscn
-res://scenes/viv_ui2.tscn
-res://scenes/viv_ui1.tscn
-res://scenes/settings.tscn
-res://scenes/consolidated_animal.tscn
-res://scenes/camera_manager.tscn
-res://scenes/animal_manager.tscn
-res://scenes/debug_manager.tscn
-res://scenes/vivarium_manager.tscn
+res://modules/ui/viv_ui1.tscn
+res://modules/ui/settings.tscn
+res://modules/ui/main_menu.tscn
+res://modules/environment/vivarium.tscn
+res://modules/animals/consolidated_animal.tscn

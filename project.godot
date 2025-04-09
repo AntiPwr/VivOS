@@ -11,19 +11,19 @@ config_version=5
 [application]
 
 config/name="VivOS"
-run/main_scene="res://scenes/main_menu.tscn"
+run/main_scene="res://modules/ui/main_menu.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 boot_splash/show_image=false
 config/icon="res://icon.svg"
 
 [autoload]
 
-CameraManager="*res://scenes/camera_manager.tscn"
-GlobalRegistry="*res://scripts/global_registry.gd"
-DebugManager="*res://scenes/debug_manager.tscn"
-AnimalManager="*res://scenes/animal_manager.tscn"
-VivManager="*res://scenes/vivarium_manager.tscn"
-VivariumManager="*res://scenes/vivarium_manager.tscn"
+CameraManager="*res://modules/core/camera_manager.tscn"
+Registry="*res://modules/core/registry.gd"
+DebugManager="*res://modules/core/debug_manager.tscn"
+AnimalManager="*res://modules/animals/animal_manager.tscn"
+VivManager="*res://modules/core/vivarium_manager.gd"
+VivariumManager="*res://modules/data/vivarium_manager.tscn"
 
 [display]
 

@@ -1,0 +1,26 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8gg4f281re0u"]
+
+[ext_resource type="Script" path="res://modules/core/debug_manager.gd" id="1_bx6jr"]
+
+[node name="DebugManager" type="Node"]
+process_priority = -100
+script = ExtResource("1_bx6jr")
+enabled = false
+log_level = 2
+log_to_file = null
+log_file_path = null
+draw_debug_visuals = null
+ui_debug_enabled = null
+track_mouse = null
+track_interactions = null
+track_panels = null
+track_buttons = null
+visual_overlay = null
+collect_statistics = null
+verbose_timing = null
+fix_all_buttons = null
+fix_viv_button = null
+apply_global_theme = null
+default_font_size = null
+enable_panel_toggle = null
+panel_toggle_key = 70

@@ -1,0 +1,155 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8j5oyoicvhgu"]
+
+[ext_resource type="Script" path="res://modules/ui/panels/animal_bio_panel.gd" id="1_dv0ac"]
+
+[node name="AnimalBioPanel" type="Panel"]
+custom_minimum_size = Vector2(300, 400)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -200.0
+offset_right = 150.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_dv0ac")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Animal Information"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="SpeciesLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Species: Unknown"
+
+[node name="NameContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="VBoxContainer/NameContainer"]
+layout_mode = 2
+text = "Name:"
+
+[node name="NameEdit" type="LineEdit" parent="VBoxContainer/NameContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Enter name..."
+
+[node name="ConfirmNameButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Confirm Name"
+
+[node name="StatsLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Stats"
+horizontal_alignment = 1
+
+[node name="HealthContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HealthLabel" type="Label" parent="VBoxContainer/HealthContainer"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "Health:"
+
+[node name="HealthBar" type="ProgressBar" parent="VBoxContainer/HealthContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+max_value = 100.0
+value = 100.0
+
+[node name="SatisfactionContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="SatisfactionLabel" type="Label" parent="VBoxContainer/SatisfactionContainer"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "Happy:"
+
+[node name="SatisfactionBar" type="ProgressBar" parent="VBoxContainer/SatisfactionContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+max_value = 100.0
+value = 100.0
+
+[node name="HungerContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HungerLabel" type="Label" parent="VBoxContainer/HungerContainer"]
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+text = "Hunger:"
+
+[node name="HungerBar" type="ProgressBar" parent="VBoxContainer/HungerContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+max_value = 100.0
+
+[node name="InfoTabContainer" type="TabContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Needs" type="VBoxContainer" parent="VBoxContainer/InfoTabContainer"]
+layout_mode = 2
+
+[node name="NeedsScrollContainer" type="ScrollContainer" parent="VBoxContainer/InfoTabContainer/Needs"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="NeedsContent" type="VBoxContainer" parent="VBoxContainer/InfoTabContainer/Needs/NeedsScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Info" type="VBoxContainer" parent="VBoxContainer/InfoTabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="InfoScrollContainer" type="ScrollContainer" parent="VBoxContainer/InfoTabContainer/Info"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="InfoContent" type="VBoxContainer" parent="VBoxContainer/InfoTabContainer/Info/InfoScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="FeedButton" type="Button" parent="VBoxContainer/ButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Feed"
+
+[node name="PetButton" type="Button" parent="VBoxContainer/ButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Pet"
+
+[node name="CloseButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Close"

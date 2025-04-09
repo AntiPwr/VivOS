@@ -1,0 +1,80 @@
+[gd_scene load_steps=2 format=3 uid="uid://bw4dmrcbu5fjh"]
+
+[ext_resource type="Script" path="res://modules/ui/panels/hierarchy_panel.gd" id="1_jrsmv"]
+
+[node name="HierarchyPanel" type="Panel"]
+custom_minimum_size = Vector2(400, 500)
+offset_right = 400.0
+offset_bottom = 500.0
+script = ExtResource("1_jrsmv")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Vivarium Hierarchy"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="FilterContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="FilterLabel" type="Label" parent="VBoxContainer/FilterContainer"]
+layout_mode = 2
+text = "Filter:"
+
+[node name="ShowAnimalsCheck" type="CheckBox" parent="VBoxContainer/FilterContainer"]
+layout_mode = 2
+button_pressed = true
+text = "Animals"
+
+[node name="ShowPlantsCheck" type="CheckBox" parent="VBoxContainer/FilterContainer"]
+layout_mode = 2
+button_pressed = true
+text = "Plants"
+
+[node name="ShowDecorCheck" type="CheckBox" parent="VBoxContainer/FilterContainer"]
+layout_mode = 2
+button_pressed = true
+text = "Decor"
+
+[node name="TreeContainer" type="ScrollContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Tree" type="Tree" parent="VBoxContainer/TreeContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+allow_reselect = true
+hide_folding = true
+hide_root = true
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="RefreshButton" type="Button" parent="VBoxContainer/ButtonsContainer"]
+layout_mode = 2
+text = "Refresh"
+
+[node name="FocusButton" type="Button" parent="VBoxContainer/ButtonsContainer"]
+layout_mode = 2
+text = "Focus Selected"
+
+[node name="CloseButton" type="Button" parent="VBoxContainer/ButtonsContainer"]
+layout_mode = 2
+text = "Close"

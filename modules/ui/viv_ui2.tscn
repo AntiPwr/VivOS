@@ -1,0 +1,86 @@
+[gd_scene load_steps=3 format=3 uid="uid://wanimk6c0nxm"]
+
+[ext_resource type="Script" path="res://modules/ui/viv_ui2.gd" id="1_8hjmq"]
+[ext_resource type="PackedScene" uid="uid://cbi6rp35cnfuu" path="res://modules/ui/settings.tscn" id="2_8dkn2"]
+
+[node name="VivUI2" type="Node"]
+script = ExtResource("1_8hjmq")
+settings_panel_scene = ExtResource("2_8dkn2")
+
+[node name="InfoPanelsContainer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="DialogsContainer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="ToolsContainer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="BioToolSystem" type="Node" parent="ToolsContainer"]
+
+[node name="SpeciesInfoControl" type="Control" parent="ToolsContainer/BioToolSystem"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 3
+anchors_preset = 0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ScapeToolSystem" type="Node" parent="ToolsContainer"]
+
+[node name="BrushControl" type="Control" parent="ToolsContainer/ScapeToolSystem"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 3
+anchors_preset = 0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MaterialsControl" type="Control" parent="ToolsContainer/ScapeToolSystem"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 3
+anchors_preset = 0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="EcoToolSystem" type="Node" parent="ToolsContainer"]
+
+[node name="BackgroundsControl" type="Control" parent="ToolsContainer/EcoToolSystem"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 3
+anchors_preset = 0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SettingsContainer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 2

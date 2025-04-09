@@ -1,0 +1,33 @@
+[gd_scene load_steps=3 format=3 uid="uid://djc57g5q300m4"]
+
+[ext_resource type="Script" path="res://modules/animals/consolidated_animal.gd" id="1_a8crt"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_uhd82"]
+radius = 84.0536
+
+[node name="ConsolidatedAnimal" type="Node2D" groups=["animals"]]
+script = ExtResource("1_a8crt")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.25, 0.25)
+
+[node name="NameLabel" type="Label" parent="."]
+offset_left = -50.0
+offset_top = -50.0
+offset_right = 50.0
+offset_bottom = -20.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="InteractionArea" type="Area2D" parent="."]
+collision_layer = 2
+priority = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+shape = SubResource("CircleShape2D_uhd82")
+debug_color = Color(0.313726, 0.588235, 0.882353, 0.0588235)
+
+[node name="StatsTimer" type="Timer" parent="."]
+autostart = true

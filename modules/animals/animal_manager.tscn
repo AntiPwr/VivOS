@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://drks21h0v5vr4"]
+
+[ext_resource type="Script" path="res://modules/animals/animal_manager.gd" id="1_xka5p"]
+
+[node name="AnimalManager" type="Node"]
+script = ExtResource("1_xka5p")
