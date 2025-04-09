@@ -1,0 +1,16 @@
+res://modules/animals/animal_manager.tscn::2577ab5988deb4f325b40735ee2b8ec4::1744163334::res://.godot/exported/133200997/export-c3152aa9e413dc5a0c47f1c8575e21c0-animal_manager.scn
+res://modules/animals/consolidated_animal.tscn::79ede33e9d087150896ecaa5e829eb4b::1744208230::res://.godot/exported/133200997/export-5eadd1259f3e689bba4ca5fd5067a07c-consolidated_animal.scn
+res://modules/core/camera_manager.tscn::fb6d5b49b036877adbd029c0e5edcdc7::1744199910::res://.godot/exported/133200997/export-1aac32eabbb4f524477a4dcbfcfe31fc-camera_manager.scn
+res://modules/core/debug_manager.tscn::6ca7849bf41487bbadcc729b9043ecc9::1744200051::res://.godot/exported/133200997/export-b5b5d62b8d203c2ad5c56861f18c2e3f-debug_manager.scn
+res://modules/data/vivarium_manager.tscn::8853a396e661d65b33f8ad9f482cf47b::1744205416::res://.godot/exported/133200997/export-65384dbb80eebcd0aa1919da3d41d7e0-vivarium_manager.scn
+res://modules/environment/vivarium.tscn::373f65bf435c94dc81fa90d800e36893::1744208230::res://.godot/exported/133200997/export-f70caefb74eee15744d074adbf2f7e01-vivarium.scn
+res://modules/ui/dialogs/naming_dialog.tscn::c6c994d8be244cc1c0a6d2d37e0332a2::1744207833::res://.godot/exported/133200997/export-221baf1ec3ccae829acb1df84e0ab990-naming_dialog.scn
+res://modules/ui/panels/animal_bio_panel.tscn::0438110024db97ce6a1f5e9a22f88ac9::1744201545::res://.godot/exported/133200997/export-5c69e0146c58b3a4d8927b6ccd18c41b-animal_bio_panel.scn
+res://modules/ui/panels/hierarchy_panel.tscn::d5e20d4be8a69cecfc58b6efb87bc9e8::1744205392::res://.godot/exported/133200997/export-f439d821e1697e8249881bbde5c6f2f8-hierarchy_panel.scn
+res://modules/ui/escape_menu.tscn::aede2257f4d16e4827ccb36e0ba3a2c0::1744205415::res://.godot/exported/133200997/export-a82c240974092d8980c3ef94fe80b5cf-escape_menu.scn
+res://modules/ui/main_menu.tscn::67542a827a56a4e916be88cdb990a7c9::1744208230::res://.godot/exported/133200997/export-6223347a30e31961ab7075859643b38e-main_menu.scn
+res://modules/ui/settings.tscn::2b40af69b994d9d5df44a495594ad5d8::1744208230::res://.godot/exported/133200997/export-1986f5c8f618c5afc179a847b8350399-settings.scn
+res://modules/ui/viv_ui1.tscn::b30bc4020cb20436bee315cd136c4b9e::1744208230::res://.godot/exported/133200997/export-f974ca96a9f5caae12005a0874ffc1d0-viv_ui1.scn
+res://modules/ui/viv_ui2.tscn::fc95d1b28adbc17563948293dca75e09::1744205415::res://.godot/exported/133200997/export-ebc7ca5d556b28a164ff8f892d190c67-viv_ui2.scn
+res://themes/button_theme.tres::111c3f582536ae438219ebc57a58ea3f::1743919511::res://.godot/exported/133200997/export-befbf30f70013fe3c6e0b6d4765d5328-button_theme.res
+res://themes/global_theme.tres::70bb5bd0371f11dca053ba7717d7d3c5::1743940023::res://.godot/exported/133200997/export-416dc5d336529871a27f1ca1965ddd43-global_theme.res
